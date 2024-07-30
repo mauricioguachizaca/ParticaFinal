@@ -1,10 +1,1 @@
-[
-  {
-    "id": 1,
-    "nombre": "mauricio",
-    "direccion": "",
-    "horario": "7am -1pm",
-    "longitud": -79.20249559066448,
-    "latitud": -4.036107503775082
-  }
-]
+[{"id": 1, "nombre": "mauricio", "direccion": "", "horario": "7am -1pm", "longitud": -79.20249559066448, "latitud": -4.036107503775082},{"id": 2, "nombre": "Jose", "direccion": "undefined", "horario": "7am -2pm", "longitud": -79.19843359967965, "latitud": -3.986758039866852}]
