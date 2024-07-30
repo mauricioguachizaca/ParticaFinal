@@ -5,20 +5,19 @@
 
                             <form class="custom-form booking-form text-center"  action="#" method="post" role="form">
                                 <div class="text-center mb-4 pb-lg-2" style="justify-content: space-around;">
-                                    <em class="text-white">Universidad Nacional de Loja</em>
+                                    <em class="text-white">Grafos</em>
 
-                                    <h2 class="text-white" >Lista de Negocios</h2>
+                                    <h2 class="text-white" >Lista de Universidades</h2>
                                     <a href="/universidad/formulario" class="btn custom-btn custom-border-btn bg-white">Formulario</a>
-                                    <a href="/universidad/grafo_universidad" class="btn custom-btn custom-border-btn bg-white">Negocio Grafo</a>
-                                    <a href="/universidad/grafo_ver_admin" class="btn custom-btn custom-border-btn bg-white">Nogocio Grafo Ad</a>
+                                    <a href="/universidad/grafo_universidad" class="btn custom-btn custom-border-btn bg-white">Universidad Grafo</a>
+                                    <a href="/universidad/grafo_ver_admin" class="btn custom-btn custom-border-btn bg-white">Universidad  Ad</a>
                                 </div>
-                                <div id="map" style="width: 1000px; height: 500px;"></div>
                                 <div class="booking-form-body table-responsive-lg">
                                     letras de color blanco
                                     <table class="table  table-bordered text-white" id="tabla">
                                         <thead>
                                             <tr>
-                                                <th>Nombre</th>
+                                                <th>Estudiante</th>
                                                 <th>Direccion</th>
                                                 <th>Horario</th>
                                                 <th>Longitud</th>
@@ -54,5 +53,4 @@
     marker2.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();*/
     
 </script>
-<script src="{{ url_for('static', filename='d3/mapa.js') }}"></script>
 {% endblock %}

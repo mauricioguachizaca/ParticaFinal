@@ -1,1 +1,34 @@
-[{"id": 1, "nombre": "mauricio", "direccion": "", "horario": "7am -1pm", "longitud": -79.20249559066448, "latitud": -4.036107503775082},{"id": 2, "nombre": "Jose", "direccion": "undefined", "horario": "7am -2pm", "longitud": -79.19843359967965, "latitud": -3.986758039866852}]
+[
+  {
+    "id": 1,
+    "nombre": "Mauricio",
+    "direccion": "Universidad Nacional de Loja, Arist\u00f3teles, La Argelia, Punzara, Loja, 110110, Ecuador",
+    "horario": "7am -1pm",
+    "longitud": -79.20202619843475,
+    "latitud": -4.036107503775082
+  },
+  {
+    "id": 2,
+    "nombre": "Fermin",
+    "direccion": "Universidad T\u00e9cnica Particular de Loja, Juan de Velasco, Paris, Loja, 110107, Ecuador",
+    "horario": "3pm -6pm",
+    "longitud": -79.19902290140297,
+    "latitud": -3.9856770488986992
+  },
+  {
+    "id": 3,
+    "nombre": "Juan",
+    "direccion": "Universidad del Azuay, Hern\u00e1n Malo Ganz\u00e1lez, Universidad del Azuay, Huayna C\u00e1pac, Cuenca, Azuay, 010204, Ecuador",
+    "horario": "8am -1pm",
+    "longitud": -79.002471632098,
+    "latitud": -2.919275484969189
+  },
+  {
+    "id": 4,
+    "nombre": "Boris",
+    "direccion": "Pontificia Universidad Catolica del Ecuador, Josefina Sandoval, Barrio La Victoria, El Sagrario, Ibarra, Imbabura, 100105, Ecuador",
+    "horario": "7am -2pm",
+    "longitud": -78.10650375547576,
+    "latitud": 0.3497793405629891
+  }
+]

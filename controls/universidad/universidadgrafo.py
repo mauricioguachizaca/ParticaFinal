@@ -25,7 +25,6 @@ class UniversidadGrafo:
             for i in range(0, len(array)):
                 self.__grafo.labelVertex(i, array[i])
             # Pinta el grafo etiquetado
-            self.__grafo.paint_graph_labeled()
         else:
             # Lanza una excepción si la lista está vacía
             raise Exception("Vacio")
@@ -37,13 +36,12 @@ class UniversidadGrafo:
         if self.__grafo is None:
             return []
         # Reconstruye el grafo etiquetado si existe el archivo
-        if self.__grafo.exisFileGraph(self.__name):
+        if self.__grafo.existFileGraph(self.__name):
             self.__grafo = self.__grafo.recontruct_graph_labeled_with_lat_long(
                 file=self.__name, atype=self.__grafo, model=UniversidadDaoControl)
         # Guarda el grafo etiquetado en un archivo
         self.__grafo.save_graph_labeled(file=self.__name)
         # Pinta el grafo etiquetado
-        self.__grafo.paint_graph_labeled()
         return self.__grafo   
     
     @property

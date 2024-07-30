@@ -72,4 +72,3 @@ class GraphLabeledManaged(GraphManaged):
     
     
     
-#python -m pydoct -w Esteban_Studies/17-04-2024/controls/tda/graph/graphLabeled.py

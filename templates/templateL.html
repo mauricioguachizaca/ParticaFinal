@@ -200,22 +200,68 @@ Bootstrap 5 HTML CSS Template
 
 
         <!-- JAVASCRIPT FILES -->
-        <script src="{{ url_for('static', filename='js/jquery.min.js')}}"></script>
-        <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
-        <script src="{{ url_for('static', filename='js/jquery.sticky.js')}}"></script>
-        <script src="{{ url_for('static', filename='js/vegas.min.js')}}"></script>
-        <script src="{{ url_for('static', filename='js/custom.js')}}"></script>
-         <!-- Make sure you put this AFTER Leaflet's CSS -->
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin="">
-        </script>
-        <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
-        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-        <script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script>
+  var map = L.map('map').setView([-3.995, -79.204], 5);
 
+// Agregar marcador interactivo
+var marker = L.marker([-3.995, -79.204], { draggable: true }).addTo(map);
+
+// Función para actualizar las coordenadas del marcador
+function updateMarkerPosition(latlng) {
+  marker.setLatLng(latlng);
+  // Aquí podrías llamar a alguna función que maneje las coordenadas actualizadas
+  updateLatLng(latlng.lat, latlng.lng);
+}
+
+// Evento click en el mapa
+map.on('click', function(e) {
+  updateMarkerPosition(e.latlng);
+  updateDireccion(e.latlng.lat, e.latlng.lng);
+});
+
+// Evento dragend en el marcador
+marker.on('dragend', function(e) {
+  updateMarkerPosition(marker.getLatLng());
+  updateDireccion(marker.getLatLng().lat, marker.getLatLng().lng);
+  updateLatLng(marker.getLatLng().lat, marker.getLatLng().lng);
+});
+
+// Capa de OpenStreetMap como base del mapa
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+// Control de búsqueda
+var searchControl = new L.Control.Search({
+  url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
+  jsonpParam: 'json_callback',
+  propertyName: 'display_name',
+  propertyLoc: ['lat', 'lon'],
+  marker: false,
+  moveToLocation: function(latlng, title, map) {
+    map.setView(latlng, 13); // Ajusta el zoom aquí si es necesario
+    updateMarkerPosition(latlng);
+    updateDireccion(latlng.lat, latlng.lng);
+  }
+});
+
+// Añadir control de búsqueda al mapa
+map.addControl(searchControl);
+
+// Función para actualizar las coordenadas en el formulario
+function updateLatLng(lat, lng) {
+  document.getElementById('latitud').value = lat;
+  document.getElementById('longitud').value = lng;
+}
+
+// Función para actualizar la dirección en el formulario
 function updateDireccion(lat, lng) {
-  fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}')
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
       .then(response => response.json())
       .then(data => {
           document.getElementById('direccion').value = data.display_name;
@@ -224,53 +270,8 @@ function updateDireccion(lat, lng) {
           console.error('Error fetching address:', error);
           document.getElementById('direccion').value = 'Dirección no disponible';
       });
-    }
-            var map = L.map('map').setView([-3.995, -79.204], 5);
-            var marker = L.marker([-3.995, -79.204], { draggable: true }).addTo(map);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
-            }).addTo(map);
-        </script>
-        <script>
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-            }).addTo(map);
-            
-            // Agregar el control de búsqueda
-    var searchControl = new L.Control.Search({
-        url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
-            jsonpParam: 'json_callback',
-            propertyName: 'display_name',
-            propertyLoc: ['lat', 'lon'],
-            marker: false,
-            moveToLocation: function(latlng, title, map) {
-                // Mueve el mapa y el marcador a la ubicación buscada
-                map.setView(latlng, 13); // Puedes ajustar el nivel de zoom aquí
-                marker.setLatLng(latlng);
-                updateLatLng(latlng.lat, latlng.lng);
-            }
-        });
-        // Añadir el control de búsqueda al mapa
-        map.addControl(searchControl);
-        function updateMarkerPosition(latlng) {
-  marker.setLatLng(latlng);
-  // Aquí podrías llamar a alguna función que maneje las coordenadas actualizadas
-  updateLatLng(latlng.lat, latlng.lng);
 }
-// Evento dragend en el marcador
-marker.on('dragend', function(e) {
-  updateMarkerPosition(marker.getLatLng());
-  updateDireccion(marker.getLatLng().lat, marker.getLatLng().lng);
-  updateLatLng(marker.getLatLng().lat, marker.getLatLng().lng);
-});
-
-        function updateLatLng(lat, lng) {
-  document.getElementById('latitud').value = lat;
-  document.getElementById('longitud').value = lng;
-}
-
-        
-        </script>
+</script>
         {% block scripts %}{% endblock %}
     </body>
 </html>
