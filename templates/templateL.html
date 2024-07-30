@@ -213,7 +213,20 @@ Bootstrap 5 HTML CSS Template
         <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
         <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
         <script>
+
+function updateDireccion(lat, lng) {
+  fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}')
+      .then(response => response.json())
+      .then(data => {
+          document.getElementById('direccion').value = data.display_name;
+      })
+      .catch(error => {
+          console.error('Error fetching address:', error);
+          document.getElementById('direccion').value = 'Dirección no disponible';
+      });
+    }
             var map = L.map('map').setView([-3.995, -79.204], 5);
+            var marker = L.marker([-3.995, -79.204], { draggable: true }).addTo(map);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
             }).addTo(map);
@@ -239,6 +252,22 @@ Bootstrap 5 HTML CSS Template
         });
         // Añadir el control de búsqueda al mapa
         map.addControl(searchControl);
+        function updateMarkerPosition(latlng) {
+  marker.setLatLng(latlng);
+  // Aquí podrías llamar a alguna función que maneje las coordenadas actualizadas
+  updateLatLng(latlng.lat, latlng.lng);
+}
+// Evento dragend en el marcador
+marker.on('dragend', function(e) {
+  updateMarkerPosition(marker.getLatLng());
+  updateDireccion(marker.getLatLng().lat, marker.getLatLng().lng);
+  updateLatLng(marker.getLatLng().lat, marker.getLatLng().lng);
+});
+
+        function updateLatLng(lat, lng) {
+  document.getElementById('latitud').value = lat;
+  document.getElementById('longitud').value = lng;
+}
 
         
         </script>

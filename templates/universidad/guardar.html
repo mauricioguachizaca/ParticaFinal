@@ -56,49 +56,6 @@
 <!-- Importar Leaflet CSS y JS para el mapa -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script>
-    // Crear el mapa centrado en las coordenadas iniciales
-    var map = L.map('map').setView([-3.995, -79.204], 13);
-
-    // Añadir capa de mapa de OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Añadir un marcador al mapa en las coordenadas iniciales y hacerlo arrastrable
-    var marker = L.marker([-3.995, -79.204], {
-        draggable: true
-    }).addTo(map);
-
-    // Función para actualizar los campos de latitud y longitud en el formulario
-    function updateLatLng(lat, lng) {
-        document.getElementById('latitud').value = lat.toFixed(6);
-        document.getElementById('longitud').value = lng.toFixed(6);
-    }
-    
-    // Función para actualizar el campo de dirección en el formulario
-    function updateDireccion(lat, lng) {
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('direccion').value = data.display_name;
-            })
-            .catch(error => {
-                console.error('Error fetching address:', error);
-                document.getElementById('direccion').value = 'Dirección no disponible';
-            });
-    }
-
-    // Inicializar los campos de latitud, longitud y dirección con las coordenadas iniciales
-    updateLatLng(-3.995, -79.204);
-    updateDireccion(-3.995, -79.204);
-
-    // Evento para actualizar los campos cuando el marcador se arrastra
-    marker.on('dragend', function (e) {
-        var position = marker.getLatLng();
-        updateLatLng(position.lat, position.lng);
-        updateDireccion(position.lat, position.lng);
-    });
+<script> 
 </script>
 {% endblock %}
