@@ -84,7 +84,7 @@
     <h2>Grafo completo de los universidades</h2>
     <div id="mynetwork" class="graph-container"></div>
     <script src="/static/d3/vis.js"></script>
-    <script src="/static/d3/graph.js"></script>
+    <script src="/static/d3/grafo.js"></script>
   </section>
 
   <section class="form-container">
@@ -96,11 +96,12 @@
   
   <section class="form-container">
     <h2>Busqueda de Grafo</h2>
-    <form action="/universidad/corto_camino" method="POST" class="mt-3 mx-auto">
+    <form role="from" if="busquedaForm" method="get" class="mt-3 mx-auto">
       <div class="col-lg-6 col-12 mx-auto">
         <label for="origen">Origen:</label>
         <select class="form-control" id="origen" name="origen">
-          {% for item in parques %}
+          <option value="0"> </option>
+          {% for item in lista %}
             <option value="{{ item.id }}">{{ item.nombre }}</option>
           {% endfor %}
         </select>
@@ -108,7 +109,8 @@
       <div class="col-lg-6 col-12 mx-auto">
         <label for="destino">Destino:</label>
         <select class="form-control" id="destino" name="destino">
-          {% for item in parques %}
+          <option value="0"> </option>
+          {% for item in lista %}
             <option value="{{ item.id }}">{{ item.nombre }}</option>
           {% endfor %}
         </select>
@@ -116,30 +118,83 @@
       <div class="col-lg-6 col-12 mx-auto">
         <span>Algoritmo de Busqueda</span>
         <select class="form-control" id="algoritmo" name="algoritmo">
-          <option value="0"> Dijkstra</option>
-          <option value="1"> Floyd </option>
+          <option value="1"> Dijkstra</option>
+          <option value="2"> Floyd </option>
         </select>
       </div>
-      <button type="submit" class="btn btn-primary btn-custom">Buscar el camino</button>
+      <button type="submit" id="buscarCamino" class="btn btn-primary btn-custom">Buscar el camino</button>
     </form>
-    <div class="info-container">
-      <p>El mejor camino que usted debe recorrer es:</p>
-      <div class="alert alert-info" id="advertencia"></div>
-      <div class="alert alert-success" id="camino"></div>
-      <div class="alert alert-info" id="weigths"></div>
-    </div>
-  </section>
+    <div class="new-users">
+      <div class="user-list">
+          <div class="form-container">
+              <h2>Resultados</h2>
+              <label for="destino" style="font-size: medium;">Recorrido a seguir:</label>
+              <p style="color: #1B9C85; font-style: normal; font-size: medium;">
+                  {% for punto in caminoCorto %}
+                      {{ punto }}{% if not loop.last %} --> {% endif %}
+                  {% endfor %}
+              </p>
+              <label for="destino" style="font-size: medium;">Total del recorrido:</label>
+              <p style="color: #1B9C85; font-style: normal; font-size: medium;">{{ '%.3f' | format(Distancia) }} </p>
+          </div>
+      </div>
+  </div>
+    <!-- End of Recent Orders -->
 
-  <script>
-    if (document.getElementById('advertencia').innerHTML == '') {
-      document.getElementById('advertencia').style.display = 'none';
+  </main>
+
+</div>
+
+</div>
+
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const origenSelect = document.getElementById('origen');
+    const destinoSelect = document.getElementById('destino');
+
+    function updateOptions() {
+      const origenValue = origenSelect.value;
+      const destinoValue = destinoSelect.value;
+
+      // Mostrar todas las opciones
+      const origenOptions = origenSelect.options;
+      const destinoOptions = destinoSelect.options;
+
+      for (let i = 0; i < origenOptions.length; i++) {
+        origenOptions[i].classList.remove('hidden-option');
+        destinoOptions[i].classList.remove('hidden-option');
+      }
+
+      // Ocultar opciones seleccionadas
+      if (origenValue !== "0") {
+        const destinoOption = destinoSelect.querySelector(`option[value="${origenValue}"]`);
+        if (destinoOption) destinoOption.classList.add('hidden-option');
+      }
+
+      if (destinoValue !== "0") {
+        const origenOption = origenSelect.querySelector(`option[value="${destinoValue}"]`);
+        if (origenOption) origenOption.classList.add('hidden-option');
+      }
     }
-    if (document.getElementById('camino').innerHTML == '') {
-      document.getElementById('camino').style.display = 'none';
-    }
-    if (document.getElementById('weigths').innerHTML == '') {
-      document.getElementById('weigths').style.display = 'none';
-    }
-  </script>
+
+    origenSelect.addEventListener('change', updateOptions);
+    destinoSelect.addEventListener('change', updateOptions);
+  });
+</script>
+<script>
+  document.getElementById('busquedaForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const origen = document.getElementById('origen').value;
+    const destino = document.getElementById('destino').value;
+    const algoritmo = document.getElementById('algoritmo').value;
+
+    const url = `/universidad/grafo_universidad/${origen}/${destino}/${algoritmo}`;
+    window.location.href = url;
+  });
+</script>
 </body>
+
 </html>

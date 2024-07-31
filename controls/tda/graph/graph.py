@@ -1,25 +1,12 @@
-import sys
+import os.path
 import os, json
 import geopy.distance
-import static.d3
-
-from math import nan, sin, cos, sqrt, atan2, radians, asin 
 
 class Graph:
-    def __init__(self):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        static_dir = os.path.join(current_dir, 'static')
-        
-        d3_dir = os.path.join(static_dir, 'd3')
-        
-        self.__URLFILESGRAPH = os.path.join(d3_dir, 'graph.js')
-        self.__URLFILEGRAPHJSON = os.path.join(d3_dir, 'graphs.json')
-
     @property
     def num_vertex(self):
         raise NotImplementedError("Please implement this method")
-
+    
     @property
     def num_edges(self):
         raise NotImplementedError("Please implement this method")
@@ -27,7 +14,7 @@ class Graph:
     def exist_edges(self, v1, v2):
         raise NotImplementedError("Please implement this method")
     
-    def weigth_edges(self, v1, v2):
+    def weigth_edges(self, v1,v2):
         raise NotImplementedError("Please implement this method")
     
     def insert_edges_weigth(self, v1, v2, weigth):
@@ -36,123 +23,178 @@ class Graph:
     def insert_edges(self, v1, v2):
         raise NotImplementedError("Please implement this method")
     
-    def adjacent(self, v1):
+    def adjacent(v1):
         raise NotImplementedError("Please implement this method")
-    
-    def getLabel(self, vertex):
-        raise NotImplementedError("Please implement this method")
-    
-    def getVertex(self, label):
-        raise NotImplementedError("Please implement this method")
-
-    def newGraph(self, num_vertex):
-        raise NotImplementedError("Please implement this method")
-    
-
-    def existFileGraph(self, file):
-        url = self.__URLFILEGRAPHJSON + file
-        return os.path.exists(url)
     
     def __str__(self) -> str:
         out = ""
         for i in range(0, self.num_vertex):
-            out += "V" + str(i) + " -> "
+            out += "V" + str(i) + '\n'
             adjs = self.adjacent(i)
             if not adjs.isEmpty:
                 for j in range(0, adjs._length):
                     adj = adjs.get(j)
-                    out += "ady V" + str(adj._destination + 1) + " weigth " + str(adj._weigth) + " -> \n"
+                    out += "ady V" + str(adj._destination+1) + " weigth " + str(adj._weigth) + "\n"
+            
         return out
     
+    #funcion para obtener el nombre del vertice
+    def getVertex(self, label):
 
-    @property
-    def print_graph(self):
-        print(self.__str__())
-
-    @property
-    def print_graph_labeled(self):
-        out = ""
+        raise NotImplementedError("sin NAME")
+    """ def paint_graph(self):
+        #url = os.path.abspath('graph.html')
+        url = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))+"/static/d3/grafo.js"
+        js = 'var nodes = new vis.DataSet(['
+        #vertices
         for i in range(0, self.num_vertex):
-            out += "V" + str(i) + " -> " + str(self.getLabel(i)) + " -> "
+            js += '{id: '+str(i+1)+', label: "V'+str.get(i+1)+'"},'+'n'
+        js += ']);'
+        js += 'n'
+        
+        js += 'var edges = new vis.DataSet([n'
+        #edges
+        for i in range(0, self.num_vertex):
             adjs = self.adjacent(i)
             if not adjs.isEmpty:
                 for j in range(0, adjs._length):
                     adj = adjs.get(j)
-                    out += "ady V" + str(adj._destination + 1) + " weigth " + str(adj._weigth) + " -> \n"
-        print(out)
-
-    def __transform_graphLabeled__(self):
-        json_str = "["
+                    js += '{from: '+str(i+1)+', to: '+str(adj._destination)+', label: "'+str(adj._weigth)+'"},'+'n'
+        js += ']);'
+        js += 'n'
+        js += 'var container = document.getElementById("mynetwork"); var data = {nodes: nodes, edges: edges,};var options = {};var network = new vis.Network(container, data, options);'
+        a = open(url, "w")
+        a.write(js)
+        a.close()
+        print(url)
+    """
+    def paint_graph(self):
+        url = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))+"/static/d3/grafo.js"
+        print(url)
+        js = 'var nodes = new vis.DataSet(['
+        for i in range(0, self.num_vertex):
+            label = self.getLabel(i)  # Obtener el nombre del vértice
+            js += f'\n{{id: {i+1}, label: "{label}"}},'
+        js = js[:-1]
+        js += ']);\n'
+    
+        js+= '\n var edges = new vis.DataSet(['
         for i in range(0, self.num_vertex):
             adjs = self.adjacent(i)
-            json_str += '\n\t{\n\t\t"labelId":' + f"{str(self.getVertex(self.getLabel(i)) + 1)},"
             if not adjs.isEmpty:
-                json_str += '\n\t\t"destinations": ['
-                for j in range(0, adjs._length):
+                for j in range(0, adjs._lenght):
                     adj = adjs.get(j)
-                    json_str += '\n\t\t\t{\n\t\t\t\t"from":' + f"{str(self.getVertex(self.getLabel(i)) + 1)}" + ', \n\t\t\t\t"to":' + f"{str(self.getVertex(self.getLabel(adj._destination)) + 1)}" + ', \n\t\t\t\t"weigth":' + str(adj._weigth) + '\n\t\t\t},'
-                json_str = json_str[:-1]
-                json_str += '\n\t\t]'
-                json_str += '\n\t},'
-            else:
-                json_str += '\n\t\t"destinations": []\n'
-                json_str = json_str[:-1]
-                json_str += '\n\t},'
-        json_str = json_str[:-1]
-        json_str += '\n]'
-        return json_str
-
-    def save_graph_labeled(self, file='graph.json'):
-        url = self.__URLFILEGRAPHJSON + file
-        a = open(url, 'w')
-        a.write(self.__transform_graphLabeled__())
+                    js += '{\nfrom: '+str(i+1)+', to: '+str(adj._destination+1)+', label: "'+str(adj._weigth)+'"},'
+        js += ']);\n'
+        js += 'var container = document.getElementById("mynetwork"); \n var data = { nodes: nodes, edges: edges, }; \n var options = {}; \nvar network = new vis.Network(container, data, options);'
+        a = open(url , 'w')
+        a.write(js)
         a.close()
 
-    def recontruct_graph_labeled_with_lat_long(self, file='graph.json', atype: object = None, model: object = None):
-        url = self.__URLFILEGRAPHJSON + file
+    
+    def save_graph_label(self, filename='grafo.json'):
+        url =os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) +'/data/'+filename
+        out = []
+        for i in range(0, self.num_vertex):
+            adjs = self.adjacent(i)
+            out.append({"labelId":self.getVertex(self.getLabel(i)), "destinations":[]})
+            if not adjs.isEmpty:
+                for j in range(0, adjs._lenght):
+                    adj = adjs.get(j)
+                    out[i]["destinations"].append({"from":self.getVertex(self.getLabel(i)), "to":adj._destination})
+        
+        out = json.dumps(out)
+        a = open(url , 'w')
+        a.write(out)
+        a.close()
+
+
+
+
+
+    #funcion para recuperar el grafo
+    def load_graph(self, filename='grafo.json', atype: object= None, model: object= None):
+        url =os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) +'/data/'+filename
         a = open(url, 'r')
         data = json.load(a)
         a.close()
-        newGraph = atype
-        newModel = model()._lista
+        grafo = atype
+        modelo = model()._lista
 
-        modelos = []
+        modelos=[]
         for item in data:
-            model = newModel.get(item['labelId'] - 1)
-            newGraph.labelVertex(item['labelId'] - 1, model)
-            modelos.append(model)
+            print(item['labelId'])
+            modelaux = modelo.get(item['labelId'])
+            grafo.label_vertex(item['labelId'], modelaux)
+            modelos.append(modelaux)
+        
         for item in data:
-            destination = item['destinations']
-            if destination != []:
-                for dest in item['destinations']:
-                    distancia = calculate_weigth_geographic(modelos[dest['from'] - 1], modelos[dest['to'] - 1])
-                    newGraph.insert_edges_weigth(dest['from'] - 1, dest['to'] - 1, distancia)
-        return newGraph
-    
-    def obtain_weigths(self, graph: object = None, file='graph.json'):
-        print(graph)
-        out = []
-        for i in range(0, graph.num_vertex):
-            info = {}
-            adjs = graph.adjacent(i)
+            for destino in item['destinations']:
+                if destino != []:
+                    for dest in item['destinations']:
+                        distancia = calcular_distancia(modelos[dest['from']], modelos[dest['to']])
+                        grafo.insert_edges_weigth(dest['from'], dest['to'], distancia)
+        return grafo
+        
+    #reconstruir el grafo con el mismo formato que el guardado (load_graph_label) pero agregando el peso en label
+    def __grafoLabel__(self):
+        json = "["
+        for i in range(0, self.num_vertex):
+            adjs = self.adjacent(i)
+            json += '\n\t{\n\t\t"labelId":'+ f"{str(self.getVertex(self.getLabel(i)))},"
             if not adjs.isEmpty:
-                info['labelId'] = graph.getVertex(graph.getLabel(i)) + 1
-                info['destinations'] = []
+                json += ',\n\t\t"destinations":['
                 for j in range(0, adjs._length):
                     adj = adjs.get(j)
+                    json += '\n\t\t\t{\n\t\t\t\t"from":'+ f"{str(self.getVertex(self.getLabel(i)))}"+', \n\t\t\t\t"to":'+ str(adj._destination)
+                json = json[:-1]
+                json += '\n\t\t]'
+                json += '\n\t},'
+            else: 
+                json += '\n\t\t"destinations": []\n'
+                json += json[:-1]
+                json += '\n\t},'
+            adjs = self.adjacent(i)
+        json = json[:-1]
+        json += '\n]'
+        return json
+            
+
+    def obtain_weigths(self, grafo: object = None, filename='grafo.json'):
+        out = []
+        for i in range(0, grafo.num_vertex):
+            info = {}
+            adjs = grafo.adjacent(i)
+            if not adjs.isEmpty:
+                info['labelId'] = grafo.getVertex(grafo.getLabel(i))+1
+                info['destinations'] = []
+                for j in range(0, adjs._lenght):
+                    adj = adjs.get(j)
                     info['destinations'].append({
-                        'from': graph.getVertex(graph.getLabel(i)) + 1,
-                        'to': adj._destination + 1,
-                        'weigth': adj._weigth
-                    })
+                        "from":grafo.getVertex(grafo.getLabel(i))+1, 
+                        "to":adj._destination+1, 
+                        "weigth":adj._weigth})
                 out.append(info)
         return out
 
-def calculate_weigth_geographic(model1: object = None, model2: object = None):
-    R = 6371.01  
-    lat1 = model1._latitud
-    lon1 = model1._longitud
-    lat2 = model2._latitud
-    lon2 = model2._longitud
-    distancia = geopy.distance.distance((lat1, lon1), (lat2, lon2)).km
-    return round(distancia, 2)
+    # funcion para verificar si existe el archivo
+    def existeArchivo(self, filename):
+        url =os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) +'/data/'+filename
+        return os.path.exists(url)
+
+    def save_graph_labeled(self, filename='grafo.json'):
+        url = self.__URL + '/data/' + filename
+        a = open(url, 'w')
+        a.write(self.__grafoLabel__())
+        a.close()
+
+
+def calcular_distancia(model1: object = None, model2: object = None):
+        R = 6371.01
+        lat1 = model1._latitud
+        lon1 = model1._longitud
+        lat2 = model2._latitud
+        lon2 = model2._longitud
+        
+        distancia = geopy.distance.distance((lat1, lon1), (lat2, lon2)).km
+        return round(distancia,2)

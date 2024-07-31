@@ -1,41 +1,29 @@
 from controls.tda.graph.graphLabeledManaged import GraphLabeledManaged
-from controls.tda.graph.graphNoManaged import GraphNoManaged
 from controls.exception.arrayPositionException import ArrayPositionException
-from controls.tda.graph.adjacent import Adjacent
 from math import nan
 
-class GraphLabeledNoManaged(GraphLabeledManaged, GraphNoManaged):
-    def __init__(self, num_vert):
-        super().__init__(num_vert)
+class GraphLabeledNoManaged(GraphLabeledManaged):
+    def _init_(self, num_vert):
+        super()._init_(num_vert)
         self.__labels = []
-        self.__labelsVertex = {}
-        for i in range(0, num_vert):
-            self.__labels.append(nan)
+        for i in range(0, self.num_vertex):
+            self.__labels.append(None)
 
-    def insert_edges_weigth(self, v1, v2, weigth):
-        return super().insert_edges_weigth(v1, v2, weigth)
-                
-    def insert_edges_weigth_E(self, label1, label2, weigth):
-        v = self.getVertex(label1)
+    def insert_edges_weight_E(self, label1, label2, weight):
+        v1 = self.getVertex(label1)
         v2 = self.getVertex(label2)
-        if v != -1 and v2 != -1:
-            self.insert_edges_weigth(v, v2, weigth)
-            self.insert_edges_weigth(v2, v, weigth) 
+        if v1 == -1 or v2 == -1:
+            self.insert_edges_weight(v1, v2, weight)
+            self.insert_edges_weight(v2, v1, weight) 
         else:
-            raise ArrayPositionException("No existen los vertices")
+            raise ArrayPositionException("Vertex not found")
         
-    def insert_edges_E(self, label1, label2):
-        self.insert_edges_weigth_E(label1, label2, nan)
-    
-    def labelVertex(self, vertex, label):
-        return super().labelVertex(vertex, label)
-    
-    def getVertex(self, label):
-        return super().getVertex(label)
-    
-    def getLabel(self, vertex):
-        return super().getLabel(vertex)
-    
+    def insert_edges_weigth(self, v1, v2, weigth):
+        super().insert_edges_weigth(v2, v1, weigth)
+        super().insert_edges_weigth(v1, v2, weigth)
 
-    def newGraph(self, num_vertex):
-        return GraphLabeledNoManaged(num_vertex)
+    def getWeigth(self, v1, v2):
+        return super().weigth_edges(v1, v2)
+    
+    def getLabel(self, v):
+        return super().getLabel(v)

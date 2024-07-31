@@ -9,7 +9,7 @@
 
                                     <h2 class="text-white" >Lista de Universidades</h2>
                                     <a href="/universidad/formulario" class="btn custom-btn custom-border-btn bg-white">Formulario</a>
-                                    <a href="/universidad/grafo_universidad" class="btn custom-btn custom-border-btn bg-white">Universidad Grafo</a>
+                                    <a href="/universidad/grafo_universidad/0/0/1" class="btn custom-btn custom-border-btn bg-white">Universidad Grafo</a>
                                     <a href="/universidad/grafo_ver_admin" class="btn custom-btn custom-border-btn bg-white">Universidad  Ad</a>
                                 </div>
                                 <div class="booking-form-body table-responsive-lg">
@@ -17,6 +17,7 @@
                                     <table class="table  table-bordered text-white" id="tabla">
                                         <thead>
                                             <tr>
+                                                <th>Nro</th>
                                                 <th>Estudiante</th>
                                                 <th>Direccion</th>
                                                 <th>Horario</th>
@@ -27,6 +28,7 @@
                                         <tbody>
                                             {% for item in lista %}
                                             <tr>
+                                                <td>{{item.id}}</td>
                                                 <td>{{ item.nombre }}</td>
                                                 <td>{{ item.direccion }}</td>
                                                 <td>{{ item.horario }}</td>
@@ -41,16 +43,4 @@
                                     </table>
                                 </div>
                             </form>
-
-
-
-                            
-
-<script>
-    /*var marker = L.marker([45565, -0.09]).addTo(map);
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-    var marker2 = L.marker([51.5, -0.09]).addTo(map);
-    marker2.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();*/
-    
-</script>
 {% endblock %}

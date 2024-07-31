@@ -1,9 +1,21 @@
 {% extends "templateL.html" %}
 
 {% block content %}
+<script>
+    $(document).ready(function(){
 
-
-                            <form class="custom-form booking-form text-center"  action="#" method="post" role="form">
+        $('#link').click(function(){
+          //   create();
+        })
+    })
+</script>
+<style>
+    .table {
+        width: 100%;
+        background-color: chocolate; /* Ajustar la tabla al ancho completo */
+    }
+</style>
+                            <div class="custom-form booking-form text-center"  >
                                 <div class="text-center mb-4 pb-lg-2 " style="align-items: center;">
                                     <em class="text-white">Universidad Nacional de Loja</em>
 
@@ -22,6 +34,7 @@
                                                             <div class="col-lg-6 col-12">
                                                                 <span class="text-black">Origen</span>
                                                                 <select class="form-control" id="origen" name="origen">
+                                                                    <option value="0"> </option>
                                                                     {% for item in lista %}
                                                                         <option value="{{ item.id }}">{{ item.nombre }}</option>
                                                                     {% endfor %}
@@ -30,6 +43,7 @@
                                                             <div class="col-lg-6 col-12">
                                                                 <span class="text-black">Destino</span>
                                                                 <select class="form-control" id="destino" name="destino">
+                                                                    <option value="0">  </option>
                                                                     {% for item in lista %}
                                                                         <option value="{{ item.id }}">{{ item.nombre }}</option>
                                                                     {% endfor %}
@@ -37,7 +51,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="submit" id="guardar" class="btn custom-btn custom-border-btn text-black bg-white">Agregar</button>
+                                                    <button type="submit" id="link" class="btn custom-btn custom-border-btn text-black bg-white">Agregar</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -60,11 +74,11 @@
                                             {% for item in lista %}
                                             <tr class="text-black">
                                                 <td><b>{{ item.nombre }}</b></td>
-                                                {% for itemList in grafolista %}
-                                                     {% if itemList.labelId == item.id %}
+                                                {% for grafo in universidadGrafoaux %}
+                                                     {% if grafo.labelId == item.id %}
                                                         {% for universidad in lista %}
                                                            <td>
-                                                             {% for destino in itemList.destinations %}
+                                                             {% for destino in grafo.destinations %}
                                                                 {% if destino.to == universidad.id %}
                                                                     {{ destino.weigth }}
                                                                 {% endif %}
@@ -83,47 +97,3 @@
                                 </div>
                             </form>
                        {% endblock %}
-                    
-                       
-
-
-<script>
-    $(document).ready(function() {
-        function disableMatchingOptions(sourceId, targetId) {
-             var sourceVal = $(sourceId).val();
-                $(targetId + ' option').each(function() {
-                    if ($(this).val() == sourceVal) {
-                        $(this).attr('disabled', true);
-                    } else {
-                        $(this).removeAttr('disabled', false);
-                    }
-                });
-        }
-
-        $('#origen').change(function() {
-            disableMatchingOptions('#origen', '#destino');
-        });
-
-        $('#destino').change(function() {
-            disableMatchingOptions('#destino', '#origen');
-        });
-
-        disableMatchingOptions('#origen', '#destino');
-        disableMatchingOptions('#destino', '#origen');
-    });
-
-    $('#guardar').click(function() {
-        var destino = $('#destino').val();
-        if (destino == null) {
-            alert('El origen y el destino no pueden ser iguales');
-            return false;
-        }
-    });
-    /*var marker = L.marker([45565, -0.09]).addTo(map);
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
-    var marker2 = L.marker([51.5, -0.09]).addTo(map);
-    marker2.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();*/
-    
-</script>
-
-{% endblock %}

@@ -55,12 +55,11 @@ class Universidad():
     def _latitud(self, value):
         self.__latitud = value
 
-    def __str__(self):
-       return f'{self.__nombre}'
-  
+    def __str__(self) -> str:
+       return str(self.__id) + ' ' + self.__nombre
     
     @property   
-    def serialize(self):
+    def serializar(self):
         return {
             'id': self._id,
             'nombre': self._nombre,
@@ -71,7 +70,7 @@ class Universidad():
         }
         
     
-    def deserializar(self, data):
+    def deserializar(data):
         universidad = Universidad()
         universidad._id = data['id']
         universidad._nombre = data['nombre']

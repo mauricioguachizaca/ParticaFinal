@@ -1,67 +1,48 @@
-import numpy as np
-
+from controls.tda.graph.graphLabeledNoManaged import GraphLabeledNoManaged
 class Floyd:
-    def __init__(self, graph: object = None, start: int = 0, end: int = 0):
-        self.__graph = graph 
-        self.__start = start - 1 if start > 0 else 0  
-        self.__end = end - 1 if end > 0 else 0 
-        self.__matrix = np.full((self.__graph.num_vertex, self.__graph.num_vertex), np.inf)
-        self.__distance = np.full((self.__graph.num_vertex, self.__graph.num_vertex), -1)
-        self.__parent = np.full((self.__graph.num_vertex, self.__graph.num_vertex), -1)
-        self.__camino = None
-
-    @property
-    def initMatrix(self):
-        for i in range(self.__graph.num_vertex):
-            for j in range(self.__graph.num_vertex):
-                if i == j:
-                    self.__matrix[i][j] = 0 
-                elif self.__graph.exist_edges(i, j):
-                    self.__matrix[i][j] = self.__graph.weigth_edges(i, j)  
-                else:
-                    self.__matrix[i][j] = np.inf  
-
-    @property
-    def __reconstruct_camino_mas_corto(self):
-        path = []
-        if self.__matrix[self.__start][self.__end] == np.inf:
-            return None  #
-        crawl = self.__start
-        path.append(crawl + 1)  
-        while crawl != self.__end:
-            crawl = self.__parent[crawl][self.__end] 
-            path.append(crawl + 1)  
-        self.__camino = path[::-1] 
-        return self.__camino
+    def __init__(self, graph: object = None, origen: int = 0, destino: int = 0):
+        self.__graph = graph or GraphLabeledNoManaged()
+        self.__origen = origen - 1 if origen > 0 else 0
+        self.__destino = destino - 1 if destino > 0 else 0
+        self.numV = self.__graph.num_vertex
+        self.distanciaTotal = [[float('inf')] * self.numV for _ in range(self.numV)]
+        self.siguiente = [[-1] * self.numV for _ in range(self.numV)]
         
-    @property
-    def __printPath__(self):
-        # Imprime el resultado del algoritmo de Floyd-Warshall
-        print("Algoritmo de Floyd")
-        print(f"El camino más corto entre: {self.__start + 1} y {self.__end + 1} es:")
-        print(f"Distancia: {self.__matrix[self.__start][self.__end]}")
-        print(f"Camino:", self.__camino)
-        print("Vertex \t\t Distance")
-        for i in range(self.__graph.num_vertex):
-            print(f"{i + 1} \t\t {self.__matrix[i][self.__end]}")
+        for i in range(self.numV):
+            for j in range(self.numV):
+                weight = self.__graph.getWeigth(i, j)
+                if weight is not None:
+                    self.distanciaTotal[i][j] = weight
+                    self.siguiente[i][j] = j
 
-    @property
-    def floydWarshall(self):
-        self.initMatrix 
-        for i in range(self.__graph.num_vertex):
-            for j in range(self.__graph.num_vertex):
-                if self.__matrix[i][j] != np.inf:
-                    self.__distance[i][j] = j
-                    self.__parent[i][j] = i
-        
-        for k in range(self.__graph.num_vertex):
-            for i in range(self.__graph.num_vertex):
-                for j in range(self.__graph.num_vertex):
-                    if self.__matrix[i][j] > self.__matrix[i][k] + self.__matrix[k][j]:
-                        self.__matrix[i][j] = self.__matrix[i][k] + self.__matrix[k][j]
-                        self.__distance[i][j] = self.__distance[i][k]
-                        self.__parent[i][j] = self.__parent[k][j]
-            
-        self.__reconstruct_camino_mas_corto
-        self.__printPath__
-        return self.__matrix[self.__start][self.__end]  
+    def buscarCaminos(self):
+        for k in range(self.numV):
+            for i in range(self.numV):
+                for j in range(self.numV):
+                    if self.distanciaTotal[i][k] + self.distanciaTotal[k][j] < self.distanciaTotal[i][j]:
+                        self.distanciaTotal[i][j] = self.distanciaTotal[i][k] + self.distanciaTotal[k][j]
+                        self.siguiente[i][j] = self.siguiente[i][k]
+
+    def ruta(self):
+        origen = self.__origen
+        destino = self.__destino
+        if self.siguiente[origen][destino] == -1:
+            return []
+        path = [origen]
+        while origen != destino:
+            origen = self.siguiente[origen][destino]
+            if origen == -1:
+                return []
+            path.append(origen)
+        for i in range(len(path)):
+            path[i] += 1
+        return path
+
+    def distancia(self):
+        return self.distanciaTotal[self.__origen][self.__destino]
+
+    def caminoCorto(self):
+        self.buscarCaminos()
+        camino = self.ruta()
+        distancia = self.distancia()
+        return camino, distancia

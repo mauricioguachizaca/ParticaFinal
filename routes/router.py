@@ -1,10 +1,8 @@
 # Importar los módulos necesarios de Flask y otros controles
 from flask import Blueprint, jsonify, make_response, request, render_template, redirect, abort
 from controls.universidad.UniversidadDaoControl import UniversidadDaoControl
-from controls.tda.graph.graphLabeledNoManaged import GraphLabeledNoManaged
 from controls.universidad.universidadgrafo import UniversidadGrafo
-from controls.tda.graph.algoritmos.dijkstra import Dijkstra
-from controls.tda.graph.algoritmos.floyd import Floyd
+
 from flask_cors import CORS
 
 # Crear un Blueprint para definir rutas específicas
@@ -21,43 +19,28 @@ def mapa():
     return render_template('mapa/grafo.html')
 
 # Ruta para ver el grafo de la universidad
-@router.route('/universidad/grafo_universidad')
-def grafo_universidad():
-    universidad = UniversidadDaoControl()
-    list = universidad._lista
-    
-    if not list.isEmpty:
-        list.sort_models('_nombre')
-    
-    un = UniversidadGrafo()
-    un.get_graph
-    
-    if list.isEmpty:
-        return render_template('universidad/grafo.html', universidades=[], grafouniversidad=[])                                             
-    return render_template('universidad/grafo.html', universidades=universidad.to_dict_lista())
 
 @router.route('/universidad/grafo_ver_admin')
 def grafo_ver_admin():
-    universidad = UniversidadDaoControl()
-    universidadgraph = UniversidadGrafo()
-    universidadgraph.get_graph
-    list = universidad._lista
-    
+    ud = UniversidadDaoControl()
+    universidadGrafo = UniversidadGrafo()
+    universidadGrafo.DarGrafo
+    list = ud._list()
     if not list.isEmpty:
-        list.sort_models('_nombre')
-        return render_template('universidad/adyacencias.html', lista=universidad.to_dict_lista(), grafolista=universidadgraph.obtainWeigths)
-    return render_template('universidad/adyacencias.html')
+       list.sort_models('_nombre', 2)
+    json = universidadGrafo.obtainWeigth
+    universidadGrafo.__str__()
+    print(json)
+    return render_template('universidad/adyacencias.html', lista=ud.to_dic_lista(list), universidadGrafoaux=json)
 
 @router.route('/universidad')
 def lista_negocios():
-    un = UniversidadDaoControl()
-    list = un._lista
-    
-    # Ordenar la lista de universidades si no está vacía y renderizar la plantilla con la lista
-    if not list.isEmpty:
-        list.sort_models('_nombre')
-        return render_template('universidad/lista.html', lista=un.to_dict_lista())
-    return render_template('universidad/lista.html', lista=[])	
+    ud = UniversidadDaoControl()
+    list = ud._list()
+    if  list.isEmpty:
+        return render_template('universidad/lista.html')
+    list.sort_models('_id', 1)
+    return render_template('universidad/lista.html', lista=ud.to_dic_lista(list))
 
 # Ruta para editar una universidad específica
 @router.route('/universidad/editar/<pos>')
@@ -76,15 +59,9 @@ def ver_universidad_guardar():
 @router.route('/universidad/grafo_universidad/agregar_adyacencia', methods=['POST'])
 def agregar_adyacencia():
     data = request.form
-    print(data)
     un = UniversidadGrafo()
-    
-    # Redirigir si no hay datos o el grafo está vacío
-    if not data or un.get_graph == []:
-        return redirect('/universidad/grafo_ver_admin', code=404)
-    
-    # Insertar adyacencia en el grafo y guardar el grafo
-    un.get_graph.insert_edges(int(data['origen']-1), int(data['destino'])-1)
+    print(data)
+    un.DarGrafo.insert_edges(int(data["origen"])-1, int(data["destino"])-1)
     un.save_graph
     return redirect('/universidad/grafo_ver_admin', code=302)
 
@@ -92,10 +69,10 @@ def agregar_adyacencia():
 @router.route('/universidad/guardar', methods=['POST'])
 def universidad_guardar():
     universidad = UniversidadDaoControl()
-    print('----------------------------------')
     data = request.form
-    print(data)
-    
+    if not 'nombre' in data.keys():
+        abort(404)
+    #TODO ...Validar
     # Asignar datos de la universidad desde el formulario
     universidad._universidad._nombre = data['nombre']
     universidad._universidad._direccion = data['direccion']
@@ -107,21 +84,23 @@ def universidad_guardar():
     return redirect('/universidad', code=302)
 
 # Ruta para encontrar el camino más corto en el grafo usando Dijkstra o Floyd
-@router.route('/universidad/corto_camino', methods=['POST'])
-def corto_camino():
-    universidadgraph = UniversidadGrafo()
-    data = request.form
+@router.route('/universidad/grafo_universidad/<origen>/<destino>/<algoritmo>')
+def corto_camino(origen, destino, algoritmo):
+    try:
+       origen = int(origen)
+       destino = int(destino)
+       algoritmo = int(algoritmo)
+    except ValueError:
+        return make_response(
+            jsonify({'error': 'Los valores de origen, destino y algoritmo deben ser enteros'}),
+            400
+        )
+    ud = UniversidadDaoControl()
+    un = UniversidadGrafo()
+    grafo = un.DarGrafo
+    grafo.paint_graph()
+    list = ud._list()
+    camino, distancia = un.caminoCorto(origen, destino, algoritmo)
+    return render_template('universidad/grafo.html', lista=ud.to_dic_lista(list), caminoCorto=camino, Distancia=distancia)
+
     
-    # Redirigir si no hay datos
-    if not data:
-        return redirect('/universidad/grafo_universidad', code=404)
-    
-    # Usar el algoritmo seleccionado para encontrar el camino más corto
-    if data['algoritmos'] == '0':
-        search = Dijkstra(universidadgraph.get_graph, int(data['origen']), int(data['destino']))
-        search.dijsktra
-    else:
-        search = Floyd(universidadgraph.get_graph, int(data['destino']), int(data['origen']))
-        search.floydWarshall
-    
-    return redirect('/universidad/grafo_universidad', code=302)

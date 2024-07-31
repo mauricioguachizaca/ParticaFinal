@@ -1,57 +1,48 @@
 from controls.tda.graph.graphLabeledNoManaged import GraphLabeledNoManaged
-from controls.tda.graph.graphLabeledManaged import GraphLabeledManaged
 from controls.universidad.UniversidadDaoControl import UniversidadDaoControl
+from controls.tda.graph.algoritmos.dijkstra import Dijkstra
+from controls.tda.graph.algoritmos.floyd import Floyd
+
 import os, sys
 
 class UniversidadGrafo:
-    def __init__(self):
-        # Imprime la ruta del directorio actual
-        print(sys.path[0])
-        # Define el nombre del archivo JSON basado en el nombre del archivo actual
-        self.__name = os.path.basename((__file__)).replace('.py', '.json')
-        # Crea una instancia de UniversidadDaoControl
-        self.__ndao = UniversidadDaoControl()
+    def __init__(self) -> None:
+        self.__name = "UniversidadGrafo.json"
         self.__grafo = None
-        
+        self.__ndao = UniversidadDaoControl()
+        self.vertex_names = []
+    
     def create_graph(self):
-        # Obtiene la lista de UniversidadDaoControl
-        list = self.__ndao._lista
-        if list._length > 0:
-            # Crea una instancia de GraphLabeledNoManaged con el tamaño de la lista
-            self.__grafo = GraphLabeledNoManaged(list._length)
-            # Convierte la lista a un array
-            array = list.toArray
-            # Etiqueta cada vértice del grafo con los elementos del array
-            for i in range(0, len(array)):
-                self.__grafo.labelVertex(i, array[i])
-            # Pinta el grafo etiquetado
-        else:
-            # Lanza una excepción si la lista está vacía
-            raise Exception("Vacio")
-
-    @property
-    def get_graph(self):
-        # Crea el grafo si aún no ha sido creado
-        self.create_graph()
-        if self.__grafo is None:
-            return []
-        # Reconstruye el grafo etiquetado si existe el archivo
-        if self.__grafo.existFileGraph(self.__name):
-            self.__grafo = self.__grafo.recontruct_graph_labeled_with_lat_long(
-                file=self.__name, atype=self.__grafo, model=UniversidadDaoControl)
-        # Guarda el grafo etiquetado en un archivo
-        self.__grafo.save_graph_labeled(file=self.__name)
-        # Pinta el grafo etiquetado
-        return self.__grafo   
+        list = self.__ndao._list()
+        if list._lenght > 0:
+            self.__grafo = GraphLabeledNoManaged(list._lenght)
+            arr = list.toArray
+            for i in range(0, len(arr)):
+                self.__grafo.label_vertex(i, arr[i]._nombre)
+                self.vertex_names.append(arr[i]._nombre)
+            self.__grafo.paint_graph()
+        return self.__grafo
     
     @property
     def save_graph(self):
-        # Guarda el grafo etiquetado en un archivo
-        self.__grafo.save_graph_labeled(file=self.__name)
-
+        return self.__grafo.save_graph_label(filename= "UniversidadGrafo.json")
+    
     @property
-    def obtainWeigths(self):
-        if self.__grafo is not None:
-            # Obtiene los pesos del grafo desde el archivo
-            return self.__grafo.obtain_weigths(graph=self.__grafo, file=self.__name)
-        return []
+    def obtainWeigth(self):
+        return self.__grafo.obtain_weigths(grafo=self.__grafo, filename="UniversidadGrafo.json")
+    
+    @property
+    def DarGrafo(self):
+        self.create_graph()
+        print(self.__name)
+        if self.__grafo.existeArchivo(self.__name):
+            self.__grafo = self.__grafo.load_graph(filename=self.__name, atype=self.__grafo, model=UniversidadDaoControl)
+        self.__grafo.save_graph_label(filename=self.__name)
+        return self.__grafo
+        
+    def caminoCorto(self, origen: int, destino: int, algoritmo: int):
+        if algoritmo == 1:
+            busqueda = Dijkstra(self.__grafo, origen, destino)
+        else:
+            busqueda = Floyd(self.__grafo, origen, destino)
+        return busqueda.caminoCorto()

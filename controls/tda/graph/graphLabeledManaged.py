@@ -1,74 +1,58 @@
 from controls.tda.graph.graphManaged import GraphManaged
 from controls.exception.arrayPositionException import ArrayPositionException
-from controls.tda.graph.adjacent import Adjacent
 from math import nan
 
 class GraphLabeledManaged(GraphManaged):
-    def __init__(self, num_vert):
+    def __init__(self, num_vert) -> None:
         super().__init__(num_vert)
         self.__labels = []
-        self.__labelsVertex = {}
-        for i in range(0, num_vert):
-            self.__labels.append(nan)
-            
-            
+        self.__labelsVertx = {}
+        for i in range(0, self.num_vertex):
+            self.__labels.append(None)
+
     def getVertex(self, label):
         try:
-            return self.__labelsVertex[str(label)]
-        except:
-            return -1
-        
-        
-        
-    def getVertexAux(self, label):
-        id = -1
-        for i in range(0, self.num_vertex):
-            print(str(self.__labels[i]) + " == " + str(label))
-            if str(self.__labels[i]) == str(label):
-                id = i
-                break
-        return id
+            return self.__labelsVertx[str(label)]
+        except Exception as error:
+            return -1 
     
-    def labelVertex(self, vertex, label):
-        self.__labels[vertex] = label
-        self.__labelsVertex[str(label)] = vertex
-        print(self.__labelsVertex)
-        
-    def getLabel(self, vertex):
-        return self.__labels[vertex]
+    def label_vertex(self, v, label):
+        self.__labels[v] = label
+        self.__labelsVertx[str(label)] = v
+
+    def getLabel(self, v):
+        return self.__labels[v]
     
-    def exist_edges_E(self, label1, label2):
-        v = self.getVertex(label1)
+    def exist_edge(self, label1, label2):
+        v = self.getVertex(label1) 
         v2 = self.getVertex(label2)
-        
         if v != -1 and v2 != -1:
-            return self.exist_edges(v, v2)
-        return False
-    
+            return self.exist_edge(v, v2)
+        else:
+            return False
+        
     def insert_edges_weigth_E(self, label1, label2, weigth):
-        v = self.getVertex(label1)
+        v1 = self.getVertex(label1)
         v2 = self.getVertex(label2)
-        if v != -1 and v2 != -1:
-            return self.insert_edges_weigth(v, v2, weigth)
-        raise ArrayPositionException("No se encontro el vertice")
-    
+        if v1 != -1 and v2 != -1:
+            self.insert_edges_weigth(v1, v2, weigth)
+        else:
+            raise ArrayPositionException("Vertex not found")
+        
     def insert_edges_E(self, label1, label2):
         self.insert_edges_weigth_E(label1, label2, nan)
-    
+
     def weigth_edges_E(self, label1, label2):
-        v = self.getVertex(label1)
+        v1 = self.getVertex(label1)
         v2 = self.getVertex(label2)
-        if v != -1 and v2 != -1:
-            return self.weigth_edges(v, v2)
-        raise ArrayPositionException("No se encontro el vertice")
-    
+        if v1 != -1 and v2 != -1:
+            return self.weigth_edges(v1, v2)
+        else:
+            raise ArrayPositionException("Vertex not found")
+        
     def adjacent_E(self, label):
         v = self.getVertex(label)
         if v != -1:
             return self.adjacent(v)
-        raise ArrayPositionException("No se encontro el vertice")
-    
-    
-    
-    
-    
+        else:
+            raise ArrayPositionException("Vertex not found")
